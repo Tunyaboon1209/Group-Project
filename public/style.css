@@ -58,7 +58,6 @@ html, body {
     flex-direction: column;
     margin: auto;
     max-width: 800px;
-    border: 1px solid red;
 }
 form .title, form .content {
     background: #202020;
@@ -77,4 +76,34 @@ form .content {
 }
 form input, form textarea:focus {
     outline: none;
+}
+
+.tpBox {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-items: stretch;
+    box-sizing: border-box;
+    margin: auto 20px;
+}
+.tpItem {
+    box-sizing: border-box;
+    width: 25%;
+    margin-bottom: 20px;
+    padding: 0px 10px;
+    text-align: center;
+}
+.tpContent {
+  color: #ffffff;
+  background-color: #515151;
+  font-weight: 600;
+  text-align: center;
+  box-sizing: border-box;
+  height: 100%;
+  padding: 10px;
+  width: 50%;
+  border-radius: 50px;
+  margin: auto;
+  cursor: pointer;
 }

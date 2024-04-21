@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import CreateArea from "./CreateArea";
 
 function App() {
   let [isCreate, setIsCreate] = useState(false);
@@ -8,32 +7,29 @@ function App() {
     setIsCreate((prevValue) => {
       return !prevValue;
     });
-    console.log(isCreate);
   }
 
   return (
     <div className="index">
+
       <div className="sideBar">
         <div className="userInfoBox"></div>
         <div className="noteListBox">
           <div className="noteList">Untitle</div>
           <div className="noteList">Untitle</div>
         </div>
-        <CreateArea createNote={createNote} />
+        <div className="addButtonBox">
+          <button onClick={createNote} className="addButton">
+            Add new note
+          </button>
+        </div>
       </div>
+
       <div className="workSpace">
         {isCreate ? (
+        <div>
           <form>
-            <textarea
-              className="title"
-              name="Title"
-              placeholder="Untitle..."
-              onKeyPress={(event) => {
-                if (event.key === "Enter" && !event.shiftKey) {
-                  console.log("Enter pressed!");
-                }
-              }}
-            />
+            <textarea className="title" name="Title" placeholder="Untitle" />
             <textarea
               className="content"
               name="content"
@@ -42,6 +38,21 @@ function App() {
               placeholder="type some text..."
             />
           </form>
+          {/* <div className="tpBox">
+            <div className="tpItem">
+              <div className="tpContent">To-Do List</div>
+            </div>
+            <div className="tpItem">
+              <div className="tpContent">To-Do List</div>
+            </div>
+            <div className="tpItem">
+              <div className="tpContent">To-Do List</div>
+            </div>
+            <div className="tpItem">
+              <div className="tpContent">To-Do List</div>
+            </div>
+          </div> */}
+        </div>
         ) : null}
       </div>
     </div>
