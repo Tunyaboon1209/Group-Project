@@ -32,6 +32,9 @@ html, body {
 .sideBar .noteListBox {
     height: 50%;
     overflow-y: auto;
+    text-align: left;
+    border: 1px solid red;
+    width: 60%;
 }
 .sideBar .noteListBox div {
     margin: 1rem auto;
@@ -76,6 +79,14 @@ form .content {
 }
 form input, form textarea:focus {
     outline: none;
+}
+.saveButton {
+    color: #000000;
+    margin: auto;
+    padding: 5px 10px;
+    border-radius: 50px;
+    background-color: #ffffff;
+    cursor: pointer;
 }
 
 .tpBox {
