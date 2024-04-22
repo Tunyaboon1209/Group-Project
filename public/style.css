@@ -33,7 +33,6 @@ html, body {
     height: 50%;
     overflow-y: auto;
     text-align: left;
-    border: 1px solid red;
     width: 60%;
 }
 .sideBar .noteListBox div {
