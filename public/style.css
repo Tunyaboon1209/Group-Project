@@ -35,8 +35,9 @@ html, body {
     text-align: left;
     width: 60%;
 }
-.sideBar .noteListBox div {
-    margin: 1rem auto;
+.noteList li {
+    list-style: none;
+    margin-bottom: 1rem;
 }
 .sideBar .addButtonBox {
     height: 30%;

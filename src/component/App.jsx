@@ -1,129 +1,135 @@
 import React, { useState } from "react";
 
 function App() {
-  let [isCreate, setIsCreate] = useState(false);
-  let [text, setText] = useState({
+  let [inputText, setInputText] = useState({
+    //สร้างตัวแปรเพื่อเก็บข้อมูลที่ทำการกรอกเข้ามาทาง textArea
     title: "",
     content: "",
   });
-  let [note, setNote] = useState([]);
-  let [isOpenNote, setIsOpenNote] = useState(false);
-  let [openedNote, setOpenedNote] = useState('');
-  let [sideBarNotes, setSideBarNotes] = useState([]);
-
-  function createNote() {
-    setIsCreate(true);
-    setIsOpenNote(false);
-    setOpenedNote('');
-  }
+  let [notes, setNotes] = useState([]);
+  let [editNoteIndex, setEditNoteIndex] = useState(null);
 
   function handleChange(event) {
     let { name, value } = event.target;
-    setText((prevValue) => ({
-      ...prevValue,
-      [name]: value,
+    setInputText((prevInputText) => ({
+      // ใช้ prevState แทนการใช้ useCallback
+      ...prevInputText, // ยังคงเก็บค่าเก่าไว้
+      [name]: value, // ตั้งค่าใหม่โดยใช้ name เป็น key
     }));
+  }
+
+  function createNote() {
+    if (editNoteIndex !== null) {
+      //ถ้าเป็นการเปิดโน๊ตเก่าขึ้นมาแก้ไข
+      let newNotes = [...notes];
+      newNotes[editNoteIndex] = {
+        title: inputText.title,
+        content: inputText.content,
+      };
+      setNotes(newNotes);
+      setEditNoteIndex(null);
+      setInputText({
+        title: "",
+        content: "",
+      });
+    } else {
+      setNotes((prevNotes) => {
+        return [...prevNotes, inputText];
+      });
+    }
+    setInputText({
+      title: "",
+      content: "",
+    });
   }
 
   function saveNote() {
-    if (isOpenNote) {
-      // ถ้าโน้ตเปิดอยู่ให้ทำการอัพเดทข้อมูลของโน้ตที่ถูกเปิด
-      setNote(prevNotes => {
-        const updatedNotes = prevNotes.map(noteItem => {
-          if (noteItem === openedNote) {
-            return { ...openedNote, ...text }; // อัพเดท title และ content ใหม่
-          }
-          return noteItem;
-        });
-        return updatedNotes;
-      });
-      setIsOpenNote(false);
-      setOpenedNote('');
+    if (editNoteIndex !== null) {
+      //ถ้าเป็นการเปิดโน๊ตเก่าขึ้นมาแก้ไข
+      let newNotes = [...notes];
+      newNotes[editNoteIndex] = {
+        title: inputText.title,
+        content: inputText.content,
+      };
+      setNotes(newNotes);
+      setEditNoteIndex(null);
     } else {
-      // ถ้าเป็นการสร้างโน้ตใหม่
-      const newNote = { ...text }; // สร้างโน้ตใหม่จากข้อมูลใน text
-      setNote(prevNotes => [...prevNotes, newNote]); // เพิ่มโน้ตใหม่เข้าไปใน array ของ note
-      setSideBarNotes(prevNotes => [...prevNotes, newNote.title]); // เพิ่ม title ของโน้ตใหม่เข้าไปใน sidebar
+      setNotes((prevNotes) => {
+        return [...prevNotes, inputText];
+      });
     }
-    setText({ title: "", content: "" }); // เคลียร์ค่าใน textarea หลังจากบันทึก
   }
 
-  function openNote(index) {
-    setIsCreate(false);
-    setIsOpenNote(true);
-    setOpenedNote(note[index]);
-  }
-
-  const changeOpenedNote = (event) => {
-    const { name, value } = event.target;
-    setOpenedNote(prevNote => ({
-      ...prevNote,
-      [name]: value
-    }));
-  };
+  function editNote(index) {
+    // เมื่อคลิกที่รายชื่อโน๊ตบน side bar
+    if (editNoteIndex !== index) {
+      let newNotes = [...notes];
+      newNotes[editNoteIndex] = {
+        title: inputText.title, // ใช้ inputText ในการอัพเดท title
+        content: inputText.content, // ใช้ inputText ในการอัพเดท content
+      };
+      setNotes(newNotes);
+    } else if (editNoteIndex === index) {
+      return
+    } else {
+      setNotes((prevNotes) => {
+        return [...prevNotes, inputText];
+      });
+    }
+    setInputText({
+      title: notes[index].title,
+      content: notes[index].content,
+    });
+    setEditNoteIndex(index); // บอกว่าโน๊ตที่เราเปิดขึ้นมาแก้ไขคืออันไหน
+    console.log(editNoteIndex, index);
+  }  
 
   return (
     <div className="index">
+      {/* ส่วนของ side bar */}
       <div className="sideBar">
         <div className="userInfoBox"></div>
         <div className="noteListBox">
-          {sideBarNotes.map((noteTitle, index) => (
-            <div className="noteList" key={index} onClick={() => openNote(index)}>
-              {noteTitle}
-            </div>
-          ))}
+          <ul className="noteList">
+            {notes.map((noteItem, index) => {
+              return (
+                <li
+                  key={index}
+                  onClick={() => {
+                    editNote(index);
+                  }}
+                >
+                  {noteItem.title}
+                </li>
+              );
+            })}
+          </ul>
         </div>
         <div className="addButtonBox">
-          <button onClick={createNote} className="addButton">
+          <button className="addButton" onClick={createNote}>
             Add new note
           </button>
         </div>
       </div>
 
       <div className="workSpace">
-        {isOpenNote && (
-          <form>
-            <textarea
-              className="title"
-              name="title"
-              placeholder="Untitle"
-              onChange={changeOpenedNote}
-              value={openedNote.title}
-            />
-            <textarea
-              className="content"
-              name="content"
-              cols="30"
-              rows="10"
-              placeholder="type some text..."
-              onChange={changeOpenedNote}
-              value={openedNote.content}
-            />
-            <div className="saveButton" onClick={saveNote}>save</div>
-          </form>
-        )}
-
-        {isCreate && (
-          <form>
-            <textarea
-              className="title"
-              name="title"
-              placeholder="Untitle"
-              onChange={handleChange}
-              value={text.title}
-            />
-            <textarea
-              className="content"
-              name="content"
-              cols="30"
-              rows="10"
-              placeholder="type some text..."
-              onChange={handleChange}
-              value={text.content}
-            />
-            <div className="saveButton" onClick={saveNote}>save</div>
-          </form>
-        )}
+        <form>
+          <textarea
+            className="title"
+            name="title"
+            placeholder="Untitle"
+            onChange={handleChange}
+            value={inputText.title}
+          />
+          <textarea
+            className="content"
+            name="content"
+            cols="30"
+            rows="10"
+            onChange={handleChange}
+            value={inputText.content}
+          />
+        </form>
       </div>
     </div>
   );
