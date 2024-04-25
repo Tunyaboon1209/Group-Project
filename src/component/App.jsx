@@ -1,136 +1,105 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 
 function App() {
-  let [inputText, setInputText] = useState({
-    //สร้างตัวแปรเพื่อเก็บข้อมูลที่ทำการกรอกเข้ามาทาง textArea
-    title: "",
-    content: "",
-  });
   let [notes, setNotes] = useState([]);
-  let [editNoteIndex, setEditNoteIndex] = useState(null);
+  let [title, setTitle] = useState('');
+  let [content, setContent] = useState('');
+  let [selectedNoteIndex, setSelectedNoteIndex] = useState(null); // เพิ่ม state เก็บ index ของโน๊ตที่ถูกเลือก
 
-  function handleChange(event) {
-    let { name, value } = event.target;
-    setInputText((prevInputText) => ({
-      // ใช้ prevState แทนการใช้ useCallback
-      ...prevInputText, // ยังคงเก็บค่าเก่าไว้
-      [name]: value, // ตั้งค่าใหม่โดยใช้ name เป็น key
-    }));
+  function handleTitleChange(event) {
+    setTitle(event.target.value);
   }
 
-  function createNote() {
-    if (editNoteIndex !== null) {
-      //ถ้าเป็นการเปิดโน๊ตเก่าขึ้นมาแก้ไข
-      let newNotes = [...notes];
-      newNotes[editNoteIndex] = {
-        title: inputText.title,
-        content: inputText.content,
-      };
-      setNotes(newNotes);
-      setEditNoteIndex(null);
-      setInputText({
-        title: "",
-        content: "",
-      });
-    } else {
-      setNotes((prevNotes) => {
-        return [...prevNotes, inputText];
-      });
-    }
-    setInputText({
-      title: "",
-      content: "",
-    });
+  function handleContentChange(event) {
+    setContent(event.target.value);
   }
 
-  function saveNote() {
-    if (editNoteIndex !== null) {
-      //ถ้าเป็นการเปิดโน๊ตเก่าขึ้นมาแก้ไข
-      let newNotes = [...notes];
-      newNotes[editNoteIndex] = {
-        title: inputText.title,
-        content: inputText.content,
+  function handleSaveEntry() {
+    if (title.trim() !== '') {
+      let newNote = {
+        title: title,
+        content: content
       };
-      setNotes(newNotes);
-      setEditNoteIndex(null);
-    } else {
-      setNotes((prevNotes) => {
-        return [...prevNotes, inputText];
-      });
+      if (selectedNoteIndex !== null) { // ถ้ามีโน๊ตที่ถูกเลือกเพื่อแก้ไข
+        let updatedNotes = [...notes];
+        updatedNotes[selectedNoteIndex] = newNote; // แทนที่โน๊ตเดิมด้วยโน๊ตใหม่
+        setNotes(updatedNotes);
+        setSelectedNoteIndex(null); // รีเซ็ต state ของโน๊ตที่ถูกเลือก
+      } else {
+        setNotes([...notes, newNote]);
+      }
+      setTitle('');
+      setContent('');
     }
   }
 
-  function editNote(index) {
-    // เมื่อคลิกที่รายชื่อโน๊ตบน side bar
-    if (editNoteIndex !== index) {
-      let newNotes = [...notes];
-      newNotes[editNoteIndex] = {
-        title: inputText.title, // ใช้ inputText ในการอัพเดท title
-        content: inputText.content, // ใช้ inputText ในการอัพเดท content
-      };
-      setNotes(newNotes);
-    } else if (editNoteIndex === index) {
-      return
-    } else {
-      setNotes((prevNotes) => {
-        return [...prevNotes, inputText];
-      });
+  function handleEditEntry(index) {
+    let entryToEdit = notes[index];
+    setTitle(entryToEdit.title);
+    setContent(entryToEdit.content);
+    setSelectedNoteIndex(index); // เซ็ต state เพื่อระบุว่าโน๊ตที่เลือกจะถูกแก้ไข
+  }
+
+  function handleDeleteEntry(index) {
+    let updatedEntries = [...notes];
+    updatedEntries.splice(index, 1);
+    setNotes(updatedEntries);
+    if (selectedNoteIndex === index) {
+      setSelectedNoteIndex(null); // ถ้าโน๊ตที่ถูกเลือกในรายการถูกลบออกแล้ว เราจะรีเซ็ต state ของโน๊ตที่ถูกเลือก
     }
-    setInputText({
-      title: notes[index].title,
-      content: notes[index].content,
-    });
-    setEditNoteIndex(index); // บอกว่าโน๊ตที่เราเปิดขึ้นมาแก้ไขคืออันไหน
-    console.log(editNoteIndex, index);
-  }  
+  }
 
   return (
-    <div className="index">
-      {/* ส่วนของ side bar */}
-      <div className="sideBar">
-        <div className="userInfoBox"></div>
-        <div className="noteListBox">
-          <ul className="noteList">
-            {notes.map((noteItem, index) => {
-              return (
-                <li
-                  key={index}
-                  onClick={() => {
-                    editNote(index);
-                  }}
-                >
-                  {noteItem.title}
-                </li>
-              );
-            })}
-          </ul>
-        </div>
-        <div className="addButtonBox">
-          <button className="addButton" onClick={createNote}>
-            Add new note
-          </button>
-        </div>
+    <div className='index'>
+      <div className='sideBar'>
+        <ul className='noteListBox'>
+          {notes.map((entry, index) => (
+            <div className='listItem'>
+              <li key={index}>
+                <h3 onClick={() => handleEditEntry(index)}>{entry.title}</h3>
+                <button onClick={() => handleDeleteEntry(index)} className='deleteItem'>Delete</button>
+              </li>
+            </div>
+          ))}
+        </ul>
       </div>
-
-      <div className="workSpace">
-        <form>
-          <textarea
-            className="title"
-            name="title"
-            placeholder="Untitle"
-            onChange={handleChange}
-            value={inputText.title}
+      {selectedNoteIndex !== <div className='workSpace'>
+        <div className='inputArea'>
+          <input
+            className='title'
+            type="text"
+            placeholder="Title"
+            value={title}
+            onChange={handleTitleChange}
           />
           <textarea
-            className="content"
-            name="content"
-            cols="30"
-            rows="10"
-            onChange={handleChange}
-            value={inputText.content}
-          />
-        </form>
-      </div>
+            className='content'
+            placeholder="Content"
+            value={content}
+            onChange={handleContentChange}
+          ></textarea>
+          <button className='saveButton' onClick={handleSaveEntry}>Save</button>
+        </div>
+      </div> && ( // ถ้ามีโน๊ตที่ถูกเลือกเพื่อแก้ไข
+          <div className='workSpace'>
+            <div className='inputArea'>
+              <input
+                className='title'
+                type="text"
+                placeholder="Title"
+                value={title}
+                onChange={handleTitleChange}
+              />
+              <textarea
+                className='content'
+                placeholder="Content"
+                value={content}
+                onChange={handleContentChange}
+              ></textarea>
+              <button className='saveButton' onClick={handleSaveEntry}>Save</button>
+            </div>
+          </div>
+        )}
     </div>
   );
 }

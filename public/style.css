@@ -20,64 +20,59 @@ html, body {
     color: #fff;
     display: flex;
     flex-direction: column;
-    justify-content: flex-end; /* จัดตำแหน่งปุ่มไปที่ด้านล่าง */
+    justify-content: start; /* จัดตำแหน่งปุ่มไปที่ด้านล่าง */
   }
-.sideBar .userInfoBox, .sideBar .noteListBox, .sideBar .addButtonBox {
+.sideBar .noteListBox {
     margin-left: auto;
     margin-right: auto;
-}
-.sideBar .userInfoBox {
-    height: 20%;
-}
-.sideBar .noteListBox {
-    height: 50%;
     overflow-y: auto;
-    text-align: left;
+    text-align: start;
     width: 60%;
 }
-.noteList li {
-    list-style: none;
+.listItem {
     margin-bottom: 1rem;
+    background-color: #202020;
+    text-align: start;
+    padding: 10px 20px;
+    margin-left: -2rem;
+    display: flex;
+    flex-direction: row;
 }
-.sideBar .addButtonBox {
-    height: 30%;
+.listItem li {
+    list-style: none;
 }
-.addButton {
-    padding: 15px 30px;
-    background-color: #ffffff;
-    color: #000000;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    margin: 5rem auto;
+.deleteItem {
+    margin-left: 5rem;
+    margin-right: 0;
 }
 
+/* พื้นที่ในการสร้างโน๊ตใหม่ */
 .workSpace {
     width: 80%;
     background-color: #202020;
 }
-.workSpace form {
+.workSpace .inputArea {
     display: flex;
     flex-direction: column;
     margin: auto;
     max-width: 800px;
 }
-form .title, form .content {
+.inputArea .title, .inputArea .content {
     background: #202020;
     color: #ffffff;
     border: none;
     max-width: 100%;
 }
-form .title {
+.inputArea .title {
     font-size: 80px;
     resize: none;
     margin-top: 3rem;
 }
-form .content {
+.inputArea .content {
     font-size: 20px;
     resize: none;
 }
-form input, form textarea:focus {
+.inputArea input, .inputArea textarea:focus {
     outline: none;
 }
 .saveButton {
